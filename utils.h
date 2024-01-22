@@ -13,6 +13,8 @@
 #include <cstdarg>  // For va_start, etc.
 #include <chrono>
 #include <vector>
+#include <unistd.h>
+#include <sys/syscall.h>
 
 using namespace std::string_literals;
 
@@ -23,6 +25,14 @@ extern int debug;
 
 #define DEBUG_ON       1
 #define DEBUG_VERBOSE  2
+
+#ifndef SYS_gettid
+#error "SYS_gettid unavailable on this system"
+#endif
+
+#define gettid() ((pid_t)syscall(SYS_gettid))
+
+#define NO_RETURN_TRAFFIC
 
 // If only decapsulation is required, i.e. you will never send traffic back to GWLB via the local interfaces,
 // you can define the following symbol to improve performance (GWLBTun no longer needs to track flow cookies, etc.)
